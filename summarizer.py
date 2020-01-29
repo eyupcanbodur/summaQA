@@ -2,17 +2,17 @@ import json
 import nltk
 import sys
 from gensim.summarization import summarize
+from collections import OrderedDict
 SENTENCE_COUNT = 2
 
 # Reads a json file and return a dictionary object
 
 
 def read_json(file_path):
-    temp_json = {}
+    temp_json = OrderedDict()
     with open(file_path, 'r') as f:
         temp_json = json.load(f)
     return temp_json
-
 # Write dictionary object to a json formatted file
 
 
