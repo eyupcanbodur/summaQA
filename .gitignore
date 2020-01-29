@@ -1,6 +1,8 @@
 cache_dir/
-outputs/
+outputs*/
 runs/
+results/
+*.zip
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

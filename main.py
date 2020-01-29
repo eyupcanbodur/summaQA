@@ -60,9 +60,9 @@ train_args = {
     # 'gradient_accumulation_steps': 8,
 }
 
-model = QuestionAnsweringModel('bert', 'bert-base-cased', args=train_args, use_cuda=False)
-train_data = takeDataFromSquadDataset(sys.argv[1])
-model.train_model(train_data)
+model = QuestionAnsweringModel('bert', './outputs-squad-normal',args=train_args)
+#train_data = takeDataFromSquadDataset(sys.argv[1])
+#model.train_model(train_data)
 # We will use dev-v2.json data (4 mb) from Squad dataset.
-evaluate(model, sys.argv[2])
+evaluate(model, sys.argv[1])
 

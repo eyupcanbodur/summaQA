@@ -1,5 +1,6 @@
 import json
 import nltk
+import sys
 from gensim.summarization import summarize
 SENTENCE_COUNT = 2
 
@@ -25,7 +26,7 @@ def isParagraphValid(paragraph):
     return len(nltk.sent_tokenize(paragraph)) > SENTENCE_COUNT
 
 
-squadTrainingJSON = read_json('./datasets/test-train-v2.0.json')
+squadTrainingJSON = read_json(sys.argv[1])
 squadTrainingJSONData = squadTrainingJSON["data"]
 
 # version, data
@@ -33,7 +34,6 @@ squadTrainingJSONData = squadTrainingJSON["data"]
 # paragraphsta [{qas, context}...] var
 aa = squadTrainingJSONData[0]["paragraphs"]
 
-% % time
 # tpDict : Title-Paragraph dictionary
 # qcDict : Questions - Context dictionary
 ind = 0
@@ -46,22 +46,19 @@ for tpDict in squadTrainingJSONData:
     total += len(tpDict["paragraphs"])
     for qcDict in tpDict["paragraphs"]:
         context = qcDict["context"]
-        if(isParagraphValid(context)):
-            try:
-                summary = summarize(context)
-                if summary == "":
-                    empty_summarized += 1
+        try:
+            summary = summarize(context)
+            if summary == "":
+                empty_summarized += 1
 #                 print("EMPTY")
-                else:
-                    summarized += 1
-                    qcDict["context"] = summary
+            else:
+                summarized += 1
+                qcDict["context"] = summary
 #                 print("SUMMARY\n" + summary)
-            except ValueError:
-                # Do nothing
-                error += 1
+        except ValueError:
+            # Do nothing
+            error += 1
 #                 print("Text too short error")
-        else:
-            skipped += 1
 print("Successfull Summary Count: " + str(summarized))
 print("Empty Summary Count: " + str(empty_summarized))
 print("Not Valid(Skipped) Summary Count: " + str(skipped))
