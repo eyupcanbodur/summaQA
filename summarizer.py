@@ -19,6 +19,7 @@ def read_json(file_path):
 def write_to_json(data, file_path):
     with open(file_path, "w") as f:
         json.dump(data, f)
+    print("Write into: "+file_path)
 
 
 def isParagraphValid(paragraph):
@@ -65,4 +66,4 @@ print("Not Valid(Skipped) Summary Count: " + str(skipped))
 print("Total Context Count: " + str(total))
 print("Error Count: " + str(error))
 
-write_to_json(squadTrainingJSON, "./1.json")
+write_to_json(squadTrainingJSON, sys.argv[2] + ".json")
