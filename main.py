@@ -48,10 +48,10 @@ def getModel():
     train_args = get_train_args()
     if(modelType == ModelType.TRAINED):
         model = QuestionAnsweringModel(
-            'bert', params[Params.TRAINED_MODEL_PATH], args=train_args, use_cuda=False)
+            'bert', params[Params.TRAINED_MODEL_PATH], args=train_args, use_cuda=True)
     if(modelType == ModelType.NOT_TRAINED):
         model = QuestionAnsweringModel(
-            'bert', 'bert-base-cased', args=train_args, use_cuda=False)
+            'bert', 'bert-base-cased', args=train_args, use_cuda=True)
     if(model == ""):
         print("Error on getting the model")
         exit(1)
@@ -170,6 +170,5 @@ def run():
     model = getModel()
     trainModel(model)
     evaluate(model)
-
 
 run()
