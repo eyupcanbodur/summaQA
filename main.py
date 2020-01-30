@@ -72,7 +72,7 @@ def trainModel(model):
     if(modelType == ModelType.NOT_TRAINED):
         # Read the given SQUAD file format
         train_data = takeDataFromSquadDataset(
-            params[Params.TRAINING_DATA_PATH])
+                params[Params.TRAINING_DATA_PATH])
         model.train_model(train_data)
 
 
@@ -163,6 +163,7 @@ def get_train_args():
         # 'train_batch_size': 2,
         # 'gradient_accumulation_steps': 8,
     }
+    return train_args
 
 
 def run():

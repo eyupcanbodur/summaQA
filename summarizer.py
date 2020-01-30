@@ -3,6 +3,7 @@ import nltk
 import sys
 from gensim.summarization import summarize
 from collections import OrderedDict
+import re
 SENTENCE_COUNT = 2
 
 # Reads a json file and return a dictionary object
@@ -30,10 +31,28 @@ def isParagraphValid(paragraph):
 squadTrainingJSON = read_json(sys.argv[1])
 squadTrainingJSONData = squadTrainingJSON["data"]
 
+def answerIsIn(summary, qcDict):
+    qas = qcDict["qas"]
+    for questionsDict in qas:
+        if(questionsDict["is_impossible"] == False):
+            for answerDict in questionsDict["answers"]:
+                answer = answerDict["text"]
+                answer_start=answerDict["answer_start"]
+                found_in_summary=False
+                for m in re.finditer(answer,summary):
+                    print(questionsDict)
+                    answerDict["answer_start"] = m.start()
+                    print('%02d-%02d: %s' % (m.start(), m.end(), m.group(0)))
+                    print(answerDict)
+                    found_in_summary=True
+                    break
+                if(found_in_summary == False):
+                    questionsDict["is_impossible"] = True
+                    break
+                print(questionsDict)
 # version, data
 # data da, [{title, paragraphs}...} var
 # paragraphsta [{qas, context}...] var
-aa = squadTrainingJSONData[0]["paragraphs"]
 
 # tpDict : Title-Paragraph dictionary
 # qcDict : Questions - Context dictionary
@@ -43,23 +62,26 @@ summarized = 0
 empty_summarized = 0
 skipped = 0
 error = 0
+
+ind = 0
 for tpDict in squadTrainingJSONData:
     total += len(tpDict["paragraphs"])
     for qcDict in tpDict["paragraphs"]:
+        if ind == 5 : exit(1)
+        ind+=1
         context = qcDict["context"]
         try:
             summary = summarize(context)
             if summary == "":
                 empty_summarized += 1
-#                 print("EMPTY")
             else:
                 summarized += 1
-                qcDict["context"] = summary
-#                 print("SUMMARY\n" + summary)
+                qcDict["context"] = summary.replace("\n","").replace("\r","").replace("\t"," ")
+                answerIsIn(qcDict["context"],qcDict)
+                #print(qcDict["context"])
         except ValueError:
             # Do nothing
             error += 1
-#                 print("Text too short error")
 print("Successfull Summary Count: " + str(summarized))
 print("Empty Summary Count: " + str(empty_summarized))
 print("Not Valid(Skipped) Summary Count: " + str(skipped))
