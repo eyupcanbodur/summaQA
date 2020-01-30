@@ -4,6 +4,7 @@ import sys
 from gensim.summarization import summarize
 from collections import OrderedDict
 import re
+
 SENTENCE_COUNT = 2
 
 # Reads a json file and return a dictionary object
@@ -11,16 +12,18 @@ SENTENCE_COUNT = 2
 
 def read_json(file_path):
     temp_json = OrderedDict()
-    with open(file_path, 'r') as f:
+    with open(file_path, "r") as f:
         temp_json = json.load(f)
     return temp_json
+
+
 # Write dictionary object to a json formatted file
 
 
 def write_to_json(data, file_path):
     with open(file_path, "w") as f:
         json.dump(data, f)
-    print("Write into: "+file_path)
+    print("Write into: " + file_path)
 
 
 def isParagraphValid(paragraph):
@@ -31,25 +34,25 @@ def isParagraphValid(paragraph):
 squadTrainingJSON = read_json(sys.argv[1])
 squadTrainingJSONData = squadTrainingJSON["data"]
 
+
 def answerIsIn(summary, qcDict):
-    qas = qcDict["qas"]
-    for questionsDict in qas:
-        if(questionsDict["is_impossible"] == False):
+    for questionsDict in qcDict["qas"]:
+        if not questionsDict["is_impossible"]:
             for answerDict in questionsDict["answers"]:
                 answer = answerDict["text"]
-                answer_start=answerDict["answer_start"]
-                found_in_summary=False
-                for m in re.finditer(answer,summary):
-                    print(questionsDict)
-                    answerDict["answer_start"] = m.start()
-                    print('%02d-%02d: %s' % (m.start(), m.end(), m.group(0)))
-                    print(answerDict)
-                    found_in_summary=True
+                answer_start = answerDict["answer_start"]
+                found_in_summary = False
+                # print("Answer", answer)
+                # print("Summary", summary)
+                found_point = summary.find(answer)
+                if found_point != -1:
+                    answerDict["answer_start"] = found_point
                     break
-                if(found_in_summary == False):
+                if not found_in_summary:
                     questionsDict["is_impossible"] = True
                     break
-                print(questionsDict)
+
+
 # version, data
 # data da, [{title, paragraphs}...} var
 # paragraphsta [{qas, context}...] var
@@ -67,8 +70,9 @@ ind = 0
 for tpDict in squadTrainingJSONData:
     total += len(tpDict["paragraphs"])
     for qcDict in tpDict["paragraphs"]:
-        if ind == 5 : exit(1)
-        ind+=1
+        # if ind == 5:
+        #     exit(1)
+        # ind += 1
         context = qcDict["context"]
         try:
             summary = summarize(context)
@@ -76,9 +80,10 @@ for tpDict in squadTrainingJSONData:
                 empty_summarized += 1
             else:
                 summarized += 1
-                qcDict["context"] = summary.replace("\n","").replace("\r","").replace("\t"," ")
-                answerIsIn(qcDict["context"],qcDict)
-                #print(qcDict["context"])
+                qcDict["context"] = (
+                    summary.replace("\n", "").replace("\r", "").replace("\t", " ")
+                )
+                answerIsIn(qcDict["context"], qcDict)
         except ValueError:
             # Do nothing
             error += 1
