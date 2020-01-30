@@ -50,4 +50,4 @@ You can always get help or how to install instructions with
   - /main.py not-trained path_to_training_data path_to_evaluation_data
 
 * 2- With model that previously trained and Evaluation Dataset. Just give the path of the saved model folder.
-  - ./main.py with-trained path_to_trained_model path_to_evaluation datas
+  - ./main.py with-trained path_to_trained_model path_to_evaluation data
