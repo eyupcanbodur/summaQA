@@ -3,6 +3,7 @@ outputs*/
 runs/
 results/
 *.zip
+trained-model-normal/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
