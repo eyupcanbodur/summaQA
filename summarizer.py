@@ -1,3 +1,4 @@
+# @author Eyupcan Bodur, Bahadir Adak
 import json
 import nltk
 import sys
@@ -5,9 +6,12 @@ from gensim.summarization import summarize
 from collections import OrderedDict
 import re
 
-SENTENCE_COUNT = 2
-
 # Reads a json file and return a dictionary object
+"""
+    HOW TO RUN
+    1 - Download any Squad format like dataset.
+    2 - run with ./summarizer.py path_to_dataset name_of_the_new_dataset
+"""
 
 
 def read_json(file_path):
@@ -18,21 +22,19 @@ def read_json(file_path):
 
 
 # Write dictionary object to a json formatted file
-
-
 def write_to_json(data, file_path):
     with open(file_path, "w") as f:
         json.dump(data, f)
     print("Write into: " + file_path)
 
 
-def isParagraphValid(paragraph):
-    # Check for sentence count. If sentence_count > SENTENCE_COUNT return true.
-    return len(nltk.sent_tokenize(paragraph)) > SENTENCE_COUNT
-
-
 squadTrainingJSON = read_json(sys.argv[1])
 squadTrainingJSONData = squadTrainingJSON["data"]
+
+"""
+    Check for questions' answers that asked to that context is exist in the summarized context.
+    If it's not, make is_impossible=True. Means that for that context, that question is not possible to solve 
+"""
 
 
 def answerIsIn(summary, qcDict):
@@ -53,26 +55,17 @@ def answerIsIn(summary, qcDict):
                     break
 
 
-# version, data
-# data da, [{title, paragraphs}...} var
-# paragraphsta [{qas, context}...] var
-
 # tpDict : Title-Paragraph dictionary
 # qcDict : Questions - Context dictionary
-ind = 0
 total = 0
 summarized = 0
 empty_summarized = 0
 skipped = 0
 error = 0
-
-ind = 0
 for tpDict in squadTrainingJSONData:
     total += len(tpDict["paragraphs"])
     for qcDict in tpDict["paragraphs"]:
-        # if ind == 5:
-        #     exit(1)
-        # ind += 1
+
         context = qcDict["context"]
         try:
             summary = summarize(context)
